@@ -1,0 +1,6 @@
+{
+  "root": ".",
+  "allow": ["allowed/**"],
+  "deny": ["blocked/**", "**/*.secret"],
+  "symlinkPolicy": "follow"
+}

@@ -1,0 +1,6 @@
+{
+  "root": "./workspace",
+  "allow": ["src/**", "README.md"],
+  "deny": ["**/.env", "secrets/**"],
+  "symlinkPolicy": "refuse"
+}
