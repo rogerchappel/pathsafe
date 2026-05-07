@@ -21,39 +21,39 @@ export interface PathsafeDecision {
   input: string;
   root: string;
   absolutePath: string;
-  realPath?: string;
-  relativePath?: string;
+  realPath?: string | undefined;
+  relativePath?: string | undefined;
   symlinkPolicy: SymlinkPolicy;
   reason: PathsafeReasonCode;
   message: string;
-  matchedRule?: PathsafeRuleMatch;
+  matchedRule?: PathsafeRuleMatch | undefined;
   checks: Array<{
     code: PathsafeReasonCode;
     ok: boolean;
     message: string;
-    pattern?: string;
+    pattern?: string | undefined;
   }>;
 }
 
 export interface PathsafeOptions {
   root: string;
-  allow?: string[];
-  deny?: string[];
-  symlinkPolicy?: SymlinkPolicy;
-  cwd?: string;
+  allow?: string[] | undefined;
+  deny?: string[] | undefined;
+  symlinkPolicy?: SymlinkPolicy | undefined;
+  cwd?: string | undefined;
 }
 
 export interface PathsafeConfig {
-  root?: string;
-  allow?: string[];
-  deny?: string[];
-  symlinkPolicy?: SymlinkPolicy;
+  root?: string | undefined;
+  allow?: string[] | undefined;
+  deny?: string[] | undefined;
+  symlinkPolicy?: SymlinkPolicy | undefined;
 }
 
 export interface BatchInput {
   path: string;
-  root?: string;
-  allow?: string[];
-  deny?: string[];
-  symlinkPolicy?: SymlinkPolicy;
+  root?: string | undefined;
+  allow?: string[] | undefined;
+  deny?: string[] | undefined;
+  symlinkPolicy?: SymlinkPolicy | undefined;
 }
