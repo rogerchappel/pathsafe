@@ -43,5 +43,16 @@
   "devDependencies": {
     "@types/node": "^24.0.0",
     "typescript": "^5.9.0"
-  }
+  },
+  "engines": {
+    "node": ">=20.11"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rogerchappel/pathsafe.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rogerchappel/pathsafe/issues"
+  },
+  "homepage": "https://github.com/rogerchappel/pathsafe#readme"
 }
