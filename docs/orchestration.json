@@ -1,0 +1,25 @@
+{
+  "project": "pathsafe",
+  "repo": "rogerchappel/pathsafe",
+  "branch": "main",
+  "status": "implemented",
+  "verification": [
+    "npm install",
+    "npm test",
+    "npm run check",
+    "npm run build",
+    "npm run smoke",
+    "bash scripts/validate.sh",
+    "real CLI fixture smoke"
+  ],
+  "features": [
+    "TypeScript library",
+    "CLI check command",
+    "CLI JSONL batch command",
+    "root containment checks",
+    "allow and deny glob rules",
+    "symlink policy",
+    "config file",
+    "explainable decisions"
+  ]
+}
