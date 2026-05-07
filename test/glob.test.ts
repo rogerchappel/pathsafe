@@ -8,7 +8,7 @@ test("matches double-star globs across directories", () => {
 });
 
 test("matches file extension globs", () => {
-  assert.equal(matchesGlob("notes.secret", "**/*.secret"), false);
+  assert.equal(matchesGlob("notes.secret", "**/*.secret"), true);
   assert.equal(matchesGlob("deep/notes.secret", "**/*.secret"), true);
   assert.equal(matchesGlob("deep/notes.txt", "**/*.secret"), false);
 });
