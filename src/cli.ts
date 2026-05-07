@@ -3,14 +3,14 @@ import { checkBatch, checkPath, findConfig, inputStream, loadConfig, mergeOption
 import type { PathsafeOptions, SymlinkPolicy } from "./types.js";
 
 interface ParsedArgs {
-  command?: string;
-  path?: string;
-  root?: string;
+  command?: string | undefined;
+  path?: string | undefined;
+  root?: string | undefined;
   allow: string[];
   deny: string[];
-  symlinkPolicy?: SymlinkPolicy;
-  config?: string;
-  input?: string;
+  symlinkPolicy?: SymlinkPolicy | undefined;
+  config?: string | undefined;
+  input?: string | undefined;
   json: boolean;
   help: boolean;
 }
@@ -56,7 +56,7 @@ function parse(argv: string[]): ParsedArgs {
   return args;
 }
 
-function human(decision: { ok: boolean; input: string; reason: string; message: string; relativePath?: string }): string {
+function human(decision: { ok: boolean; input: string; reason: string; message: string; relativePath?: string | undefined }): string {
   const status = decision.ok ? "ALLOW" : "DENY";
   const rel = decision.relativePath ? ` (${decision.relativePath})` : "";
   return `${status} ${decision.input}${rel}: ${decision.reason} - ${decision.message}`;
@@ -65,12 +65,12 @@ function human(decision: { ok: boolean; input: string; reason: string; message: 
 function optionsFromArgs(args: ParsedArgs): PathsafeOptions {
   const configPath = args.config ?? findConfig();
   const config = configPath ? loadConfig(configPath) : {};
-  return mergeOptions(config, {
-    root: args.root,
-    allow: args.allow.length ? args.allow : undefined,
-    deny: args.deny.length ? args.deny : undefined,
-    symlinkPolicy: args.symlinkPolicy
-  });
+  const overrides: Partial<PathsafeOptions> = {};
+  if (args.root !== undefined) overrides.root = args.root;
+  if (args.allow.length) overrides.allow = args.allow;
+  if (args.deny.length) overrides.deny = args.deny;
+  if (args.symlinkPolicy !== undefined) overrides.symlinkPolicy = args.symlinkPolicy;
+  return mergeOptions(config, overrides);
 }
 
 export async function main(argv = process.argv.slice(2)): Promise<number> {
