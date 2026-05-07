@@ -4,16 +4,16 @@
   "description": "Local-first TypeScript CLI and library for explainable path boundary checks.",
   "type": "module",
   "bin": {
-    "pathsafe": "./dist/cli.js"
+    "pathsafe": "./dist/src/cli.js"
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
     },
-    "./cli": "./dist/cli.js"
+    "./cli": "./dist/src/cli.js"
   },
   "files": [
     "dist",
@@ -27,7 +27,7 @@
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit",
     "test": "npm run build && node --test dist/test/*.test.js",
-    "smoke": "npm run build && node dist/cli.js check test/fixtures/root/allowed/file.txt --root test/fixtures/root --allow 'allowed/**' --deny 'blocked/**' && node dist/cli.js batch --root test/fixtures/root --input examples/batch.jsonl --json",
+    "smoke": "npm run build && node dist/src/cli.js check test/fixtures/root/allowed/file.txt --root test/fixtures/root --allow 'allowed/**' --deny 'blocked/**' && node dist/src/cli.js batch --root test/fixtures/root --input examples/batch.jsonl --json",
     "package:smoke": "npm pack --dry-run",
     "release:check": "npm test && npm run check && npm run build && npm run smoke && npm run package:smoke"
   },
