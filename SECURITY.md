@@ -2,57 +2,34 @@
 
 ## Supported Versions
 
-Replace this section with the supported versions for `pathsafe`.
-
-Example:
-
-```md
-| Version | Supported |
-| --- | --- |
-| .x | Yes |
-| < .0 | No |
-```
-
-If the project does not publish versioned releases yet, say that clearly.
+`pathsafe` is pre-1.0. Security fixes target the latest published minor version.
 
 ## Reporting a Vulnerability
 
-Please do not report suspected vulnerabilities in public issues, pull requests, or discussions.
+Please report suspected vulnerabilities through GitHub Security Advisories or by opening a minimal private report with:
 
-Ask maintainers for the private security reporting path before sharing details.
+- affected version or commit
+- operating system and filesystem notes
+- reproduction steps
+- expected and actual decision output
 
-If no private reporting path exists yet, ask maintainers through public project channels for a private reporting path. Do not include exploit details, secrets, personal data, or sensitive technical details in public messages.
+Please do not publish exploit details until there is a fix or documented mitigation.
 
-## What to Include
+## Security Model
 
-When a private reporting path is available, include:
+`pathsafe` performs deterministic local path checks. It is intended to help callers avoid path traversal and unsafe workspace access mistakes.
 
-- A clear description of the issue.
-- Affected versions, files, packages, workflows, or configuration.
-- Steps to reproduce, proof of concept, or attack scenario when safe to share.
-- Potential impact.
-- Suggested mitigation, if known.
+It is **not**:
 
-## Response Expectations
+- a kernel sandbox
+- a permissions or ACL system
+- a race-free authorization layer
+- a guarantee across all filesystems and mount configurations
 
-Maintainers review good-faith reports as capacity allows.
+For sensitive file writes:
 
-Do not imply paid support, guaranteed response times, guaranteed fixes, or service-level agreements unless `pathsafe` explicitly provides them.
-
-## Scope
-
-In scope:
-
-- Vulnerabilities in pathsafe.
-- Insecure default configuration shipped by this project.
-- CI, release, or dependency guidance maintained by this project.
-
-Out of scope:
-
-- General support requests.
-- Requests for guaranteed maintenance timelines.
-- Issues in unrelated downstream projects.
-
-## Disclosure
-
-Coordinate disclosure with maintainers before publishing vulnerability details.
+1. Use an explicit absolute or trusted root.
+2. Prefer `symlinkPolicy: "refuse"`.
+3. Validate immediately before opening the file.
+4. Avoid following attacker-controlled path segments.
+5. Combine with OS-level permissions or sandboxing where appropriate.
