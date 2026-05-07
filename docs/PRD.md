@@ -1,6 +1,6 @@
 # pathsafe
 
-Status: in-progress
+Status: implemented MVP
 Decision: selected for 2026-05-08 OSS factory run
 
 ## Scorecard
@@ -29,7 +29,7 @@ Scored by: Neo
 
 ## Attribution / Inspiration
 
-Inspired by sandbox boundary checks, path traversal mitigations, and agent file tool policies; implementation should be original and dependency-light.
+Inspired by sandbox boundary checks, path traversal mitigations, and agent file tool policies; implementation is original and dependency-light.
 
 ## V1 Scope
 
@@ -42,9 +42,21 @@ Inspired by sandbox boundary checks, path traversal mitigations, and agent file 
 - Tests for traversal, symlinks, case sensitivity notes, globs, deny precedence, and batch output.
 - README with examples for CLIs and agent file tools.
 
+## Implemented MVP
+
+- `checkPath()` library API.
+- `pathsafe check` and `pathsafe batch` CLI commands.
+- Allow/deny glob matching with deny precedence.
+- Symlink policy modes: `follow`, `refuse`, `ignore`.
+- `.pathsafe.json` discovery and merging.
+- JSON and human-readable decision output.
+- Node test suite and filesystem fixtures.
+- Smoke and validation scripts.
+
 ## Out of Scope
 
 - OS sandboxing, kernel-level controls, ACL management, network paths, or guaranteed cross-filesystem security beyond documented checks.
+- Race-free authorization for paths that can be changed after validation.
 
 ## Verification
 
@@ -52,6 +64,7 @@ Inspired by sandbox boundary checks, path traversal mitigations, and agent file 
 - `npm run check`
 - `npm run build`
 - `npm run smoke`
+- `bash scripts/validate.sh`
 - Real CLI smoke with fixture paths and symlinks where supported.
 
 ## Agent Prompt
