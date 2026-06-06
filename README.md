@@ -56,6 +56,12 @@ Batch JSONL:
 pathsafe batch --root . --input batch.jsonl --json
 ```
 
+For a runnable agent-file-write demo, see [`docs/tutorials/agent-write-boundaries.md`](docs/tutorials/agent-write-boundaries.md):
+
+```sh
+bash examples/agent-write-demo.sh
+```
+
 ## Config
 
 Create `.pathsafe.json`:
