@@ -116,3 +116,18 @@ Use `refuse` for conservative file-write tools. Use `follow` when reading existi
 ## Security model
 
 `pathsafe` is a local validation helper, not an OS sandbox. It does not provide kernel isolation, ACL management, or race-free filesystem authorization. For sensitive writes, validate as close as possible to the actual operation and prefer `symlinkPolicy: "refuse"`.
+
+## Release Readiness
+
+Use the checked-in scripts before opening or publishing a release:
+
+```sh
+npm run check
+npm test
+npm run build
+npm run smoke
+npm run package:smoke
+npm run release:check
+```
+
+The package smoke uses `npm pack --dry-run` so the published file list can be reviewed without publishing.
