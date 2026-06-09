@@ -21,7 +21,8 @@
     "LICENSE",
     "SECURITY.md",
     "CONTRIBUTING.md",
-    "examples"
+    "examples",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
