@@ -96,6 +96,22 @@ if (!decision.ok) {
 
 Use `refuse` for conservative file-write tools. Use `follow` when reading existing files and you want target containment. Use `ignore` only when a caller has already handled symlink risk.
 
+## Demo recipe
+
+Run the included fixture root through both single-path and JSONL batch checks:
+
+```sh
+npm install
+npm run build
+node dist/src/cli.js check test/fixtures/root/allowed/file.txt --root test/fixtures/root --allow 'allowed/**' --deny 'blocked/**'
+node dist/src/cli.js check test/fixtures/root/blocked/secret.txt --root test/fixtures/root --allow 'allowed/**' --deny 'blocked/**' --json
+node dist/src/cli.js batch --root test/fixtures/root --input examples/batch.jsonl --allow 'allowed/**' --deny 'blocked/**' --json
+```
+
+The fixture shows an allowed file and a denied path under the same root, which
+makes the reason codes easy to compare. Commands that include the denied path
+exit non-zero by design.
+
 ## Reason codes
 
 - `ALLOW_MATCH`
