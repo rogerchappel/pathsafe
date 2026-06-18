@@ -68,6 +68,11 @@ To write JSON artifacts for the same boundary story, run:
 bash demo/agent-write-boundary-report.sh
 ```
 
+For recording or release-review prep, use the focused checklist in
+[`docs/tutorials/agent-write-demo-checklist.md`](docs/tutorials/agent-write-demo-checklist.md)
+and the draft social thread in
+[`docs/promo/agent-write-social-thread.md`](docs/promo/agent-write-social-thread.md).
+
 ## Config
 
 Create `.pathsafe.json`:
