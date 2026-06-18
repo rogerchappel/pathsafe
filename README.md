@@ -62,6 +62,12 @@ For a runnable agent-file-write demo, see [`docs/tutorials/agent-write-boundarie
 bash examples/agent-write-demo.sh
 ```
 
+To write JSON artifacts for the same boundary story, run:
+
+```sh
+bash demo/agent-write-boundary-report.sh
+```
+
 ## Config
 
 Create `.pathsafe.json`:
