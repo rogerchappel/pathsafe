@@ -68,6 +68,17 @@ To write JSON artifacts for the same boundary story, run:
 bash demo/agent-write-boundary-report.sh
 ```
 
+For release-note generator write candidates, run:
+
+```sh
+bash demo/release-note-boundary.sh
+```
+
+The PR evidence checklist is in
+[`docs/tutorials/release-note-pr-evidence.md`](docs/tutorials/release-note-pr-evidence.md),
+with grounded social hooks in
+[`docs/promo/release-note-boundary-social-hooks.md`](docs/promo/release-note-boundary-social-hooks.md).
+
 For recording or release-review prep, use the focused checklist in
 [`docs/tutorials/agent-write-demo-checklist.md`](docs/tutorials/agent-write-demo-checklist.md)
 and the draft social thread in
