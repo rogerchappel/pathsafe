@@ -177,7 +177,8 @@ npm run package:smoke
 npm run release:check
 ```
 
-The package smoke uses `npm pack --dry-run` so the published file list can be reviewed without publishing.
+The package smoke builds a local tarball, asserts the published file list, installs
+the tarball into a temporary app, and exercises the installed library and CLI.
 
 ## Development
 
