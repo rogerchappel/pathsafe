@@ -74,6 +74,15 @@ For release-note generator write candidates, run:
 bash demo/release-note-boundary.sh
 ```
 
+For generated tutorial and promo draft write candidates, run:
+
+```sh
+bash demo/content-writer-boundary.sh
+```
+
+See [docs/tutorials/content-writer-boundary.md](docs/tutorials/content-writer-boundary.md)
+for the allow/deny fixture behavior.
+
 The PR evidence checklist is in
 [`docs/tutorials/release-note-pr-evidence.md`](docs/tutorials/release-note-pr-evidence.md),
 with grounded social hooks in
