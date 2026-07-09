@@ -83,6 +83,15 @@ bash demo/content-writer-boundary.sh
 See [docs/tutorials/content-writer-boundary.md](docs/tutorials/content-writer-boundary.md)
 for the allow/deny fixture behavior.
 
+For a scaffold-generator write-plan demo, run:
+
+```sh
+bash demo/scaffold-generator-boundary.sh
+```
+
+See [docs/tutorials/scaffold-generator-boundary.md](docs/tutorials/scaffold-generator-boundary.md)
+for the generator boundary fixture and reason-code checks.
+
 The PR evidence checklist is in
 [`docs/tutorials/release-note-pr-evidence.md`](docs/tutorials/release-note-pr-evidence.md),
 with grounded social hooks in
