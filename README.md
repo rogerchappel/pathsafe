@@ -92,6 +92,17 @@ bash demo/scaffold-generator-boundary.sh
 See [docs/tutorials/scaffold-generator-boundary.md](docs/tutorials/scaffold-generator-boundary.md)
 for the generator boundary fixture and reason-code checks.
 
+For docs-generator write candidates, run:
+
+```sh
+bash demo/docs-generator-boundary.sh
+```
+
+See [docs/tutorials/docs-generator-boundary.md](docs/tutorials/docs-generator-boundary.md)
+for the docs fixture and
+[docs/promo/docs-generator-boundary-hooks.md](docs/promo/docs-generator-boundary-hooks.md)
+for grounded promotion hooks.
+
 The PR evidence checklist is in
 [`docs/tutorials/release-note-pr-evidence.md`](docs/tutorials/release-note-pr-evidence.md),
 with grounded social hooks in
