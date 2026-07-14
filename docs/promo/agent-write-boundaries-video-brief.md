@@ -20,6 +20,9 @@ Show a local agent preparing four write paths: two draft files, one `.env`, and 
 4. Show the `.env` denial and outside-root denial.
 5. Explain that callers still validate near the actual operation because this is not kernel isolation.
 
+For archived JSON artifacts that are easier to attach to a PR or release note,
+run `bash demo/agent-write-boundary-report.sh`.
+
 ## Short hooks
 
 - "Before a local agent writes files, ask one boring question: is this path inside the boundary?"

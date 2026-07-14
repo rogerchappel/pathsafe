@@ -71,6 +71,57 @@ bash examples/release-boundary-demo.sh
 That script checks release note and asset candidates against `notes/**` and
 `assets/**`, while denying `.env` and outside-root writes.
 
+To write JSON artifacts for the same boundary story, run:
+
+```sh
+bash demo/agent-write-boundary-report.sh
+```
+
+For release-note generator write candidates, run:
+
+```sh
+bash demo/release-note-boundary.sh
+```
+
+For generated tutorial and promo draft write candidates, run:
+
+```sh
+bash demo/content-writer-boundary.sh
+```
+
+See [docs/tutorials/content-writer-boundary.md](docs/tutorials/content-writer-boundary.md)
+for the allow/deny fixture behavior.
+
+For a scaffold-generator write-plan demo, run:
+
+```sh
+bash demo/scaffold-generator-boundary.sh
+```
+
+See [docs/tutorials/scaffold-generator-boundary.md](docs/tutorials/scaffold-generator-boundary.md)
+for the generator boundary fixture and reason-code checks.
+
+For docs-generator write candidates, run:
+
+```sh
+bash demo/docs-generator-boundary.sh
+```
+
+See [docs/tutorials/docs-generator-boundary.md](docs/tutorials/docs-generator-boundary.md)
+for the docs fixture and
+[docs/promo/docs-generator-boundary-hooks.md](docs/promo/docs-generator-boundary-hooks.md)
+for grounded promotion hooks.
+
+The PR evidence checklist is in
+[`docs/tutorials/release-note-pr-evidence.md`](docs/tutorials/release-note-pr-evidence.md),
+with grounded social hooks in
+[`docs/promo/release-note-boundary-social-hooks.md`](docs/promo/release-note-boundary-social-hooks.md).
+
+For recording or release-review prep, use the focused checklist in
+[`docs/tutorials/agent-write-demo-checklist.md`](docs/tutorials/agent-write-demo-checklist.md)
+and the draft social thread in
+[`docs/promo/agent-write-social-thread.md`](docs/promo/agent-write-social-thread.md).
+
 ## Config
 
 Create `.pathsafe.json`:
@@ -155,7 +206,8 @@ npm run package:smoke
 npm run release:check
 ```
 
-The package smoke uses `npm pack --dry-run` so the published file list can be reviewed without publishing.
+The package smoke builds a local tarball, asserts the published file list, installs
+the tarball into a temporary app, and exercises the installed library and CLI.
 
 ## Development
 
