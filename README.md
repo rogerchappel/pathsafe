@@ -62,6 +62,15 @@ For a runnable agent-file-write demo, see [`docs/tutorials/agent-write-boundarie
 bash examples/agent-write-demo.sh
 ```
 
+For a release-note boundary demo with expected denials:
+
+```sh
+bash examples/release-boundary-demo.sh
+```
+
+That script checks release note and asset candidates against `notes/**` and
+`assets/**`, while denying `.env` and outside-root writes.
+
 To write JSON artifacts for the same boundary story, run:
 
 ```sh
