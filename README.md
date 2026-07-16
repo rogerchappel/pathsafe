@@ -68,6 +68,13 @@ For a release-note boundary demo with expected denials:
 bash examples/release-boundary-demo.sh
 ```
 
+For a review-pack boundary demo with allowed proof files, denied secrets, and an
+outside-root candidate:
+
+```sh
+bash demo/review-pack-boundary.sh
+```
+
 That script checks release note and asset candidates against `notes/**` and
 `assets/**`, while denying `.env` and outside-root writes.
 
