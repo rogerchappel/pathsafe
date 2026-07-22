@@ -4,6 +4,12 @@ import type { PathsafeConfig, PathsafeOptions, SymlinkPolicy } from "./types.js"
 
 const VALID_SYMLINK_POLICIES = new Set<SymlinkPolicy>(["follow", "refuse", "ignore"]);
 
+export function assertSymlinkPolicy(value: unknown, source = "symlinkPolicy"): asserts value is SymlinkPolicy {
+  if (value !== undefined && !VALID_SYMLINK_POLICIES.has(value as SymlinkPolicy)) {
+    throw new Error(`${source} must be follow, refuse, or ignore.`);
+  }
+}
+
 export function findConfig(start = process.cwd(), filename = ".pathsafe.json"): string | undefined {
   let current = path.resolve(start);
   while (true) {
@@ -20,7 +26,7 @@ export function loadConfig(configPath: string): PathsafeConfig {
   const parsed = JSON.parse(raw) as PathsafeConfig;
   if (parsed.allow && !Array.isArray(parsed.allow)) throw new Error("Config allow must be an array.");
   if (parsed.deny && !Array.isArray(parsed.deny)) throw new Error("Config deny must be an array.");
-  if (parsed.symlinkPolicy && !VALID_SYMLINK_POLICIES.has(parsed.symlinkPolicy)) throw new Error("Config symlinkPolicy must be follow, refuse, or ignore.");
+  assertSymlinkPolicy(parsed.symlinkPolicy, "Config symlinkPolicy");
   return parsed;
 }
 

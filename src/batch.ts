@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import readline from "node:readline";
 import { checkPath } from "./check.js";
+import { assertSymlinkPolicy } from "./config.js";
 import type { BatchInput, PathsafeDecision, PathsafeOptions } from "./types.js";
 
 export async function* readJsonLines(input: NodeJS.ReadableStream): AsyncGenerator<BatchInput> {
@@ -15,6 +16,7 @@ export async function* readJsonLines(input: NodeJS.ReadableStream): AsyncGenerat
 export async function checkBatch(input: NodeJS.ReadableStream, defaults: PathsafeOptions): Promise<PathsafeDecision[]> {
   const decisions: PathsafeDecision[] = [];
   for await (const item of readJsonLines(input)) {
+    assertSymlinkPolicy(item.symlinkPolicy, "Batch symlinkPolicy");
     decisions.push(checkPath(item.path, {
       ...defaults,
       root: item.root ?? defaults.root,
