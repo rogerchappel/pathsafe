@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { checkBatch, checkPath, findConfig, inputStream, loadConfig, mergeOptions } from "./index.js";
-import type { PathsafeOptions, SymlinkPolicy } from "./types.js";
+import { assertSymlinkPolicy } from "./config.js";
+import type { PathsafeOptions } from "./types.js";
 
 interface ParsedArgs {
   command?: string | undefined;
@@ -8,7 +9,7 @@ interface ParsedArgs {
   root?: string | undefined;
   allow: string[];
   deny: string[];
-  symlinkPolicy?: SymlinkPolicy | undefined;
+  symlinkPolicy?: string | undefined;
   config?: string | undefined;
   input?: string | undefined;
   json: boolean;
@@ -46,7 +47,7 @@ function parse(argv: string[]): ParsedArgs {
       case "--deny": if (next) args.deny.push(next); i += 1; break;
       case "--config": args.config = next; i += 1; break;
       case "--input": args.input = next; i += 1; break;
-      case "--symlink-policy": args.symlinkPolicy = next as SymlinkPolicy; i += 1; break;
+      case "--symlink-policy": args.symlinkPolicy = next; i += 1; break;
       case "--json": args.json = true; break;
       case "-h":
       case "--help": args.help = true; break;
@@ -69,6 +70,7 @@ function optionsFromArgs(args: ParsedArgs): PathsafeOptions {
   if (args.root !== undefined) overrides.root = args.root;
   if (args.allow.length) overrides.allow = args.allow;
   if (args.deny.length) overrides.deny = args.deny;
+  assertSymlinkPolicy(args.symlinkPolicy, "--symlink-policy");
   if (args.symlinkPolicy !== undefined) overrides.symlinkPolicy = args.symlinkPolicy;
   return mergeOptions(config, overrides);
 }
