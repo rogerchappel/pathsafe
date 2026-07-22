@@ -1,7 +1,8 @@
+import { assertSymlinkPolicy } from "./config.js";
 import { firstGlobMatch } from "./glob.js";
 import { isWithinRoot, relativePath, resolveInput, resolveRoot, safeRealpath } from "./path-utils.js";
 import { findSymlinkInPath } from "./symlink.js";
-import type { PathsafeDecision, PathsafeOptions, PathsafeReasonCode } from "./types.js";
+import type { PathsafeDecision, PathsafeOptions, PathsafeReasonCode, SymlinkPolicy } from "./types.js";
 
 function fail(base: Omit<PathsafeDecision, "ok" | "checks"> & { checks?: PathsafeDecision["checks"] }): PathsafeDecision {
   return { ...base, ok: false, checks: base.checks ?? [] };
@@ -13,7 +14,15 @@ function pass(base: Omit<PathsafeDecision, "ok" | "checks"> & { checks?: Pathsaf
 
 export function checkPath(input: string, options: PathsafeOptions): PathsafeDecision {
   const cwd = options.cwd ?? process.cwd();
-  const symlinkPolicy = options.symlinkPolicy ?? "follow";
+  const configuredPolicy: unknown = options.symlinkPolicy;
+  let symlinkPolicy: SymlinkPolicy = "follow";
+  let policyError: string | undefined;
+  try {
+    assertSymlinkPolicy(configuredPolicy);
+    symlinkPolicy = configuredPolicy ?? "follow";
+  } catch (error) {
+    policyError = error instanceof Error ? error.message : String(error);
+  }
   const allow = options.allow?.length ? options.allow : ["**"];
   const deny = options.deny ?? [];
   const root = resolveRoot(options.root, cwd);
@@ -25,6 +34,10 @@ export function checkPath(input: string, options: PathsafeOptions): PathsafeDeci
   }
   if (!options.root) {
     return fail({ input, root, absolutePath, symlinkPolicy, reason: "ROOT_MISSING", message: "A root directory is required.", checks });
+  }
+  if (policyError) {
+    checks.push({ code: "CONFIG_ERROR", ok: false, message: policyError });
+    return fail({ input, root, absolutePath, symlinkPolicy, reason: "CONFIG_ERROR", message: policyError, checks });
   }
 
   if (symlinkPolicy === "refuse") {
