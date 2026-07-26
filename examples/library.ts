@@ -1,4 +1,4 @@
-import { checkPath } from "pathsafe";
+import { checkPath } from "@rogerchappel/pathsafe";
 
 const decision = checkPath("src/index.ts", {
   root: process.cwd(),

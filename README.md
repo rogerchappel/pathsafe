@@ -17,7 +17,7 @@ It is designed for CLIs, generators, local agents, and file tools that need dete
 ## Install
 
 ```sh
-npm install pathsafe
+npm install @rogerchappel/pathsafe
 ```
 
 For local development:
@@ -147,7 +147,7 @@ CLI flags override config values.
 ## Library
 
 ```ts
-import { checkPath } from "pathsafe";
+import { checkPath } from "@rogerchappel/pathsafe";
 
 const decision = checkPath("src/index.ts", {
   root: process.cwd(),
