@@ -10,6 +10,9 @@ npm run build >/dev/null
 pack_json="$(npm pack --json --pack-destination "$tmp_dir")"
 tarball="$(node -e "const data = JSON.parse(process.argv[1]); console.log(data[0].filename)" "$pack_json")"
 
+node -e "const data = JSON.parse(process.argv[1]); if (data[0].name !== '@rogerchappel/pathsafe') { console.error('Unexpected packed package identity: ' + data[0].name); process.exit(1); }" "$pack_json"
+grep -Fq 'npm install @rogerchappel/pathsafe' README.md
+grep -Fq 'from "@rogerchappel/pathsafe"' README.md
 node -e "const data = JSON.parse(process.argv[1]); const files = new Set(data[0].files.map((file) => file.path)); for (const required of ['dist/src/cli.js', 'dist/src/index.js', 'README.md', 'LICENSE', 'SECURITY.md', 'CONTRIBUTING.md', 'CHANGELOG.md', 'CODE_OF_CONDUCT.md', 'ROADMAP.md', 'docs/tutorials/agent-write-boundaries.md', 'demo/agent-write-boundary-report.sh', 'examples/batch-allow.jsonl']) { if (!files.has(required)) { console.error('Missing package file: ' + required); process.exit(1); } }" "$pack_json"
 
 mkdir -p "$tmp_dir/app/root/allowed" "$tmp_dir/app/root/blocked"
@@ -21,7 +24,7 @@ cd "$tmp_dir/app"
 npm init -y >/dev/null
 npm install "$tmp_dir/$tarball" >/dev/null
 
-node -e "import('pathsafe').then((mod) => { if (typeof mod.checkPath !== 'function') process.exit(1); })"
+node -e "import('@rogerchappel/pathsafe').then((mod) => { if (typeof mod.checkPath !== 'function') process.exit(1); })"
 ./node_modules/.bin/pathsafe check root/allowed/file.txt --root root --allow 'allowed/**' --deny 'blocked/**' >/dev/null
 ./node_modules/.bin/pathsafe batch --root root --input batch.jsonl --allow 'allowed/**' --deny 'blocked/**' --json >/dev/null
 
