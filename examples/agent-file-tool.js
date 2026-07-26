@@ -1,4 +1,4 @@
-import { checkPath } from "pathsafe";
+import { checkPath } from "@rogerchappel/pathsafe";
 
 export function assertWritablePath(candidate, workspaceRoot) {
   const decision = checkPath(candidate, {

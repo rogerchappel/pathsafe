@@ -1,5 +1,5 @@
 {
-  "name": "pathsafe",
+  "name": "@rogerchappel/pathsafe",
   "version": "0.1.0",
   "description": "Local-first TypeScript CLI and library for explainable path boundary checks.",
   "type": "module",
@@ -45,6 +45,9 @@
   ],
   "author": "Roger Chappel",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/node": "^24.0.0",
     "typescript": "^5.9.0"
