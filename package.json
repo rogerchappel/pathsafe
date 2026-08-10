@@ -34,7 +34,8 @@
     "test": "npm run build && node --test dist/test/*.test.js",
     "smoke": "npm run build && node dist/src/cli.js check test/fixtures/root/allowed/file.txt --root test/fixtures/root --allow 'allowed/**' --deny 'blocked/**' && node dist/src/cli.js batch --root test/fixtures/root --input examples/batch-allow.jsonl --allow 'allowed/**' --json",
     "package:smoke": "bash scripts/package-smoke.sh",
-    "release:check": "npm test && npm run check && npm run build && npm run smoke && npm run package:smoke"
+    "release:contract": "node --test test/release-contract.test.mjs",
+    "release:check": "npm test && npm run check && npm run build && npm run smoke && npm run package:smoke && npm run release:contract"
   },
   "keywords": [
     "path-security",
