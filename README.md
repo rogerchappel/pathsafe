@@ -33,6 +33,10 @@ npm test
 pathsafe check ./src/index.ts --root . --allow 'src/**' --deny '**/*.secret'
 ```
 
+For `check`, the single path may appear before, after, or between options. Options
+that take values must be followed by that value; a following flag is not treated
+as one. `--input` is available only to `batch`.
+
 Human output:
 
 ```text
