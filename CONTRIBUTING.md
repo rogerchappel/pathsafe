@@ -29,6 +29,10 @@ Please include:
 - tests for the new behavior
 - docs updates when CLI output, config, or security semantics change
 
+Maintainers preparing a package version should follow
+[`docs/RELEASING.md`](docs/RELEASING.md), including its partial-release recovery
+procedure.
+
 ## Commit Style
 
 Use small, meaningful commits such as:
