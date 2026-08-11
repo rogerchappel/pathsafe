@@ -20,7 +20,7 @@ function usage(): string {
   return `pathsafe - explainable local path boundary checks
 
 Usage:
-  pathsafe check <path> --root <dir> [--allow glob] [--deny glob] [--symlink-policy follow|refuse|ignore] [--json]
+  pathsafe check [options] <path> [options]
   pathsafe batch --root <dir> [--input file.jsonl] [--json]
 
 Options:
@@ -36,24 +36,32 @@ Options:
 function parse(argv: string[]): ParsedArgs {
   const args: ParsedArgs = { allow: [], deny: [], json: false, help: false };
   args.command = argv.shift();
-  if (args.command === "check") args.path = argv.shift();
+
+  const value = (option: string, next: string | undefined): string => {
+    if (next === undefined || next.startsWith("-")) throw new Error(`${option} requires a value.`);
+    return next;
+  };
 
   for (let i = 0; i < argv.length; i += 1) {
-    const arg = argv[i];
+    const arg = argv[i]!;
     const next = argv[i + 1];
     switch (arg) {
-      case "--root": args.root = next; i += 1; break;
-      case "--allow": if (next) args.allow.push(next); i += 1; break;
-      case "--deny": if (next) args.deny.push(next); i += 1; break;
-      case "--config": args.config = next; i += 1; break;
-      case "--input": args.input = next; i += 1; break;
-      case "--symlink-policy": args.symlinkPolicy = next; i += 1; break;
+      case "--root": args.root = value(arg, next); i += 1; break;
+      case "--allow": args.allow.push(value(arg, next)); i += 1; break;
+      case "--deny": args.deny.push(value(arg, next)); i += 1; break;
+      case "--config": args.config = value(arg, next); i += 1; break;
+      case "--input": args.input = value(arg, next); i += 1; break;
+      case "--symlink-policy": args.symlinkPolicy = value(arg, next); i += 1; break;
       case "--json": args.json = true; break;
       case "-h":
       case "--help": args.help = true; break;
-      default: throw new Error(`Unknown argument: ${arg}`);
+      default:
+        if (args.command === "check" && args.path === undefined && !arg.startsWith("-")) args.path = arg;
+        else throw new Error(args.command === "check" && !arg.startsWith("-") ? `check accepts exactly one path; unexpected path: ${arg}` : `Unknown argument: ${arg}`);
     }
   }
+
+  if (args.command === "check" && args.input !== undefined) throw new Error("--input is only valid with batch.");
   return args;
 }
 
