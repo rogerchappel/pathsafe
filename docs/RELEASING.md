@@ -18,12 +18,15 @@ release with the package tarball attached.
    release exist.
 
 The workflow validates the package name, tag/version match, complete package
-contents, and ReleaseBox configuration before `npm publish`. Publication uses
-npm trusted publishing with provenance; no long-lived npm token is expected.
+contents, and ReleaseBox configuration, then creates and verifies exactly one
+package tarball before `npm publish`. The exact validated tarball path is passed
+to GitHub release creation. The pull-request dry run exercises the same
+non-publishing staging checks. Publication uses npm trusted publishing with
+provenance; no long-lived npm token is expected.
 
 ## Recovery
 
-- If validation or npm publication fails, fix the cause without reusing or
+- If validation, artifact staging, or npm publication fails, fix the cause without reusing or
   moving a published tag. Delete an unpublished failed tag if necessary, merge
   the correction, and create a new tag for the corrected release commit.
 - If npm publication succeeds but GitHub release creation fails, do not rerun

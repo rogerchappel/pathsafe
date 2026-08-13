@@ -46,7 +46,21 @@ jobs:
           tag_version="${GITHUB_REF_NAME#v}"
           test "$package_name" = "@rogerchappel/pathsafe"
           test "$package_version" = "$tag_version"
-          npm pack --dry-run
+      - name: Stage release artifact
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+          pack_json="$(npm pack --json)"
+          artifact_name="$(node -e 'const result = JSON.parse(process.argv[1]); if (result.length !== 1 || typeof result[0].filename !== "string") process.exit(1); process.stdout.write(result[0].filename)' "$pack_json")"
+          case "$artifact_name" in
+            *.tgz) ;;
+            *) echo "npm pack returned an unexpected artifact: $artifact_name" >&2; exit 1 ;;
+          esac
+          artifact_path="$PWD/$artifact_name"
+          test -f "$artifact_path"
+          tar -tzf "$artifact_path" >/dev/null
+          echo "artifact_path=$artifact_path" >> "$GITHUB_OUTPUT"
       - name: Publish package to npm
         run: npm publish --provenance --access public
       - name: Generate release notes
@@ -54,4 +68,4 @@ jobs:
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "${GITHUB_REF_NAME}" --notes-file RELEASE_NOTES.md ./*.tgz
+        run: gh release create "${GITHUB_REF_NAME}" --notes-file RELEASE_NOTES.md "${{ steps.package.outputs.artifact_path }}"

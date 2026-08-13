@@ -8,6 +8,8 @@ on:
       - package.json
       - package-lock.json
       - .github/workflows/release*.yml
+      - scripts/release-contract.mjs
+      - test/release-contract.test.mjs
 
 permissions:
   contents: read
@@ -39,6 +41,21 @@ jobs:
         run: node /tmp/releasebox/bin/releasebox.js check .
       - name: Run release checks
         run: npm run release:check
+      - name: Stage release artifact
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+          pack_json="$(npm pack --json)"
+          artifact_name="$(node -e 'const result = JSON.parse(process.argv[1]); if (result.length !== 1 || typeof result[0].filename !== "string") process.exit(1); process.stdout.write(result[0].filename)' "$pack_json")"
+          case "$artifact_name" in
+            *.tgz) ;;
+            *) echo "npm pack returned an unexpected artifact: $artifact_name" >&2; exit 1 ;;
+          esac
+          artifact_path="$PWD/$artifact_name"
+          test -f "$artifact_path"
+          tar -tzf "$artifact_path" >/dev/null
+          echo "artifact_path=$artifact_path" >> "$GITHUB_OUTPUT"
       - name: Release notes preview
         run: |
           node /tmp/releasebox/bin/releasebox.js notes . > release-notes-preview.md
