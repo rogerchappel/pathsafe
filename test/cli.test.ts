@@ -72,3 +72,19 @@ test("CLI rejects an invalid symlink policy before checking an outside-target sy
   assert.match(result.stderr, /--symlink-policy must be follow, refuse, or ignore/);
   assert.doesNotMatch(result.stdout, /ALLOW_MATCH/);
 });
+
+test("CLI reports invalid config values without internal TypeErrors", () => {
+  const directory = fs.mkdtempSync(path.join(path.dirname(root), "cli-config-"));
+  const configPath = path.join(directory, ".pathsafe.json");
+  try {
+    for (const value of [null, { root, allow: [42] }]) {
+      fs.writeFileSync(configPath, JSON.stringify(value));
+      const result = spawnSync(process.execPath, [cli, "check", path.join(root, "allowed/file.txt"), "--config", configPath], { encoding: "utf8" });
+      assert.equal(result.status, 2);
+      assert.match(result.stderr, new RegExp(`Invalid config ${configPath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}:`));
+      assert.doesNotMatch(result.stderr, /Cannot read properties|pattern\.replace|TypeError/);
+    }
+  } finally {
+    fs.rmSync(directory, { recursive: true });
+  }
+});
