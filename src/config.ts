@@ -23,11 +23,34 @@ export function findConfig(start = process.cwd(), filename = ".pathsafe.json"): 
 
 export function loadConfig(configPath: string): PathsafeConfig {
   const raw = fs.readFileSync(configPath, "utf8");
-  const parsed = JSON.parse(raw) as PathsafeConfig;
-  if (parsed.allow && !Array.isArray(parsed.allow)) throw new Error("Config allow must be an array.");
-  if (parsed.deny && !Array.isArray(parsed.deny)) throw new Error("Config deny must be an array.");
-  assertSymlinkPolicy(parsed.symlinkPolicy, "Config symlinkPolicy");
-  return parsed;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    throw new Error(`Invalid config ${configPath}: invalid JSON (${detail})`);
+  }
+
+  const invalid = (detail: string): never => {
+    throw new Error(`Invalid config ${configPath}: ${detail}`);
+  };
+  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+    invalid("expected a JSON object.");
+  }
+
+  const config = parsed as Record<string, unknown>;
+  if (config.root !== undefined && typeof config.root !== "string") invalid("root must be a string.");
+  for (const key of ["allow", "deny"] as const) {
+    const value = config[key];
+    if (value !== undefined && !Array.isArray(value)) invalid(`${key} must be an array of strings.`);
+    if (Array.isArray(value) && value.some((item) => typeof item !== "string")) invalid(`${key} must contain only strings.`);
+  }
+  try {
+    assertSymlinkPolicy(config.symlinkPolicy, "symlinkPolicy");
+  } catch {
+    invalid("symlinkPolicy must be follow, refuse, or ignore.");
+  }
+  return config as PathsafeConfig;
 }
 
 export function mergeOptions(config: PathsafeConfig, overrides: Partial<PathsafeOptions>): PathsafeOptions {
