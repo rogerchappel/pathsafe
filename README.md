@@ -148,6 +148,11 @@ Create `.pathsafe.json`:
 
 CLI flags override config values.
 
+The config file must contain a JSON object. `root`, when present, must be a
+string; `allow` and `deny` must be arrays containing only strings; and
+`symlinkPolicy` must be `follow`, `refuse`, or `ignore`. Invalid values are
+reported with the config file path before any path checks run.
+
 ## Library
 
 ```ts
