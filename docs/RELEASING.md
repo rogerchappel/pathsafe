@@ -24,6 +24,13 @@ to GitHub release creation. The pull-request dry run exercises the same
 non-publishing staging checks. Publication uses npm trusted publishing with
 provenance; no long-lived npm token is expected.
 
+The pull-request dry run is triggered by every input class used by
+`npm run release:check` or included in the npm package: source and tests,
+TypeScript configuration, support scripts, examples and demos, documentation,
+packed root files, package metadata, ReleaseBox configuration, and release
+workflows. `test/release-contract.test.mjs` parses the workflow path filters and
+keeps representative files from each class covered as these surfaces evolve.
+
 ## Recovery
 
 - If validation, artifact staging, or npm publication fails, fix the cause without reusing or

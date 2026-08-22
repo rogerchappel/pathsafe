@@ -4,12 +4,24 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - releasebox.config.json
+      - src/**
+      - test/**
+      - tsconfig.json
+      - scripts/**
+      - examples/**
+      - demo/**
+      - docs/**
+      - README.md
+      - LICENSE
+      - SECURITY.md
+      - CONTRIBUTING.md
+      - CHANGELOG.md
+      - CODE_OF_CONDUCT.md
+      - ROADMAP.md
       - package.json
       - package-lock.json
+      - releasebox.config.json
       - .github/workflows/release*.yml
-      - scripts/release-contract.mjs
-      - test/release-contract.test.mjs
 
 permissions:
   contents: read
