@@ -1,9 +1,54 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { checkReleaseContract, validateReleaseContract } from "../scripts/release-contract.mjs";
+import {
+  checkReleaseContract,
+  parsePullRequestPaths,
+  validateReleaseContract,
+  validateReleaseDryRunPaths,
+} from "../scripts/release-contract.mjs";
 
 test("repository release contract is internally consistent", async () => {
   await checkReleaseContract();
+});
+
+test("release dry-run paths cover every checked and packed input class", () => {
+  const workflow = `
+  pull_request:
+    paths:
+      - src/**
+      - test/**
+      - tsconfig.json
+      - scripts/**
+      - examples/**
+      - demo/**
+      - docs/**
+      - README.md
+      - LICENSE
+      - SECURITY.md
+      - CONTRIBUTING.md
+      - CHANGELOG.md
+      - CODE_OF_CONDUCT.md
+      - ROADMAP.md
+      - package.json
+      - package-lock.json
+      - releasebox.config.json
+      - .github/workflows/release*.yml
+`;
+  assert.deepEqual(validateReleaseDryRunPaths(workflow), []);
+  assert(parsePullRequestPaths(workflow).includes("test/**"));
+});
+
+test("release dry-run paths report a representative omitted input", () => {
+  const workflow = `
+  pull_request:
+    paths:
+      - package.json
+`;
+  const errors = validateReleaseDryRunPaths(workflow);
+  assert(errors.some((error) => error.includes("src/check.ts")));
+  assert(errors.some((error) => error.includes("test/check.test.ts")));
+  assert(errors.some((error) => error.includes("scripts/package-smoke.sh")));
+  assert(errors.some((error) => error.includes("README.md")));
 });
 
 test("contract rejects publishing before validation", () => {

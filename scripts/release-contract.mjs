@@ -1,5 +1,55 @@
 import { readFile } from "node:fs/promises";
 
+const releaseDryRunInputs = [
+  "src/check.ts",
+  "test/check.test.ts",
+  "tsconfig.json",
+  "scripts/package-smoke.sh",
+  "examples/batch-allow.jsonl",
+  "demo/agent-write-boundary-report.sh",
+  "docs/RELEASING.md",
+  "README.md",
+  "LICENSE",
+  "SECURITY.md",
+  "CONTRIBUTING.md",
+  "CHANGELOG.md",
+  "CODE_OF_CONDUCT.md",
+  "ROADMAP.md",
+  "package.json",
+  "package-lock.json",
+  "releasebox.config.json",
+  ".github/workflows/release.yml",
+  ".github/workflows/release-dry-run.yml",
+];
+
+export function parsePullRequestPaths(workflow) {
+  const lines = workflow.split(/\r?\n/);
+  const pullRequest = lines.findIndex((line) => /^  pull_request:\s*$/.test(line));
+  if (pullRequest === -1) return [];
+  const paths = lines.findIndex((line, index) => index > pullRequest && /^    paths:\s*$/.test(line));
+  if (paths === -1) return [];
+  const patterns = [];
+  for (const line of lines.slice(paths + 1)) {
+    if (/^  \S/.test(line)) break;
+    const match = line.match(/^      -\s+['"]?([^'"]+)['"]?\s*$/);
+    if (match) patterns.push(match[1]);
+  }
+  return patterns;
+}
+
+function pathMatches(pattern, candidate) {
+  const escaped = pattern.replace(/[.+^${}()|[\]\\]/g, "\\$&");
+  const expression = escaped.replaceAll("**", "\0").replaceAll("*", "[^/]*").replaceAll("\0", ".*");
+  return new RegExp(`^${expression}$`).test(candidate);
+}
+
+export function validateReleaseDryRunPaths(workflow) {
+  const patterns = parsePullRequestPaths(workflow);
+  return releaseDryRunInputs
+    .filter((candidate) => !patterns.some((pattern) => pathMatches(pattern, candidate)))
+    .map((candidate) => `release dry-run pull_request paths do not cover ${candidate}`);
+}
+
 const artifactRequirements = [
   ["npm pack --json", "create a package artifact with npm pack --json"],
   ["result.length !== 1", "require exactly one npm pack result"],
@@ -58,11 +108,7 @@ export function validateReleaseContract({ config, workflow, dryRunWorkflow = nul
   }
   if (dryRunWorkflow !== null) {
     errors.push(...validateArtifactStaging(dryRunWorkflow, "release dry-run workflow"));
-    for (const requiredPath of ["scripts/release-contract.mjs", "test/release-contract.test.mjs"]) {
-      if (!dryRunWorkflow.includes(`- ${requiredPath}`)) {
-        errors.push(`release dry-run pull_request paths must include ${requiredPath}`);
-      }
-    }
+    errors.push(...validateReleaseDryRunPaths(dryRunWorkflow));
   }
   return errors;
 }
