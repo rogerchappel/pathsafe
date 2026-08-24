@@ -16,6 +16,22 @@ It is designed for CLIs, generators, local agents, and file tools that need dete
 
 ## Install
 
+The npm package has not been released yet. Until the first release, install a
+tarball built from a checkout into a clean prefix:
+
+```sh
+git clone https://github.com/rogerchappel/pathsafe.git
+cd pathsafe
+npm ci
+tarball="$(npm pack --silent)"
+install_prefix="$(mktemp -d)"
+npm install --prefix "$install_prefix" "./$tarball"
+"$install_prefix/node_modules/.bin/pathsafe" check README.md --root . --allow 'README.md'
+```
+
+After the package is released to the npm registry, installation will simplify
+to:
+
 ```sh
 npm install @rogerchappel/pathsafe
 ```
