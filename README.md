@@ -188,7 +188,7 @@ if (!decision.ok) {
 
 ## Symlink policies
 
-- `follow` (default): use the real path when possible and enforce containment on the resolved target.
+- `follow` (default): canonicalize the configured root and target when possible, then enforce containment and evaluate relative globs on those resolved paths.
 - `refuse`: deny if any existing path segment is a symlink.
 - `ignore`: evaluate the lexical path without resolving symlinks.
 

@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { checkPath } from "../src/index.js";
@@ -10,6 +12,27 @@ test("allows a path inside root that matches allow", () => {
   assert.equal(decision.ok, true);
   assert.equal(decision.reason, "ALLOW_MATCH");
   assert.equal(decision.relativePath, "allowed/file.txt");
+});
+
+test("follow policy canonicalizes a symlinked configured root", (t) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "pathsafe-root-"));
+  t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+  const realRoot = path.join(directory, "real-root");
+  const linkedRoot = path.join(directory, "root-link");
+  fs.mkdirSync(path.join(realRoot, "sub"), { recursive: true });
+  fs.writeFileSync(path.join(realRoot, "sub/file.txt"), "fixture\n");
+  fs.symlinkSync(realRoot, linkedRoot, "dir");
+
+  const decision = checkPath(path.join(linkedRoot, "sub/file.txt"), {
+    root: linkedRoot,
+    allow: ["sub/**"],
+    symlinkPolicy: "follow"
+  });
+
+  assert.equal(decision.ok, true);
+  assert.equal(decision.reason, "ALLOW_MATCH");
+  assert.equal(decision.root, fs.realpathSync.native(realRoot));
+  assert.equal(decision.relativePath, "sub/file.txt");
 });
 
 test("denies traversal outside root", () => {
