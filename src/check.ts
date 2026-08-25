@@ -25,8 +25,9 @@ export function checkPath(input: string, options: PathsafeOptions): PathsafeDeci
   }
   const allow = options.allow?.length ? options.allow : ["**"];
   const deny = options.deny ?? [];
-  const root = resolveRoot(options.root, cwd);
-  const absolutePath = resolveInput(input, root, cwd);
+  const configuredRoot = resolveRoot(options.root, cwd);
+  const root = symlinkPolicy === "follow" ? safeRealpath(configuredRoot) ?? configuredRoot : configuredRoot;
+  const absolutePath = resolveInput(input, configuredRoot, cwd);
   const checks: PathsafeDecision["checks"] = [];
 
   if (!input) {
