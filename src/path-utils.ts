@@ -45,14 +45,6 @@ export function canonicalizePath(target: string): string {
   }
 }
 
-export function safeRealpath(target: string): string | undefined {
-  try {
-    return fs.realpathSync.native(target);
-  } catch {
-    return undefined;
-  }
-}
-
 export function pathFromMaybeFileUrl(value: string): string {
   if (value.startsWith("file://")) {
     return fileURLToPath(value);

@@ -1,6 +1,6 @@
 import { assertSymlinkPolicy } from "./config.js";
 import { firstGlobMatch } from "./glob.js";
-import { isWithinRoot, relativePath, resolveInput, resolveRoot, safeRealpath } from "./path-utils.js";
+import { canonicalizePath, isWithinRoot, relativePath, resolveInput, resolveRoot } from "./path-utils.js";
 import { findSymlinkInPath } from "./symlink.js";
 import type { PathsafeDecision, PathsafeOptions, PathsafeReasonCode, SymlinkPolicy } from "./types.js";
 
@@ -25,17 +25,20 @@ export function checkPath(input: string, options: PathsafeOptions): PathsafeDeci
   }
   const allow = options.allow?.length ? options.allow : ["**"];
   const deny = options.deny ?? [];
-  const configuredRoot = resolveRoot(options.root, cwd);
-  const root = symlinkPolicy === "follow" ? safeRealpath(configuredRoot) ?? configuredRoot : configuredRoot;
-  const absolutePath = resolveInput(input, configuredRoot, cwd);
   const checks: PathsafeDecision["checks"] = [];
 
   if (!input) {
-    return fail({ input, root, absolutePath, symlinkPolicy, reason: "INPUT_MISSING", message: "No input path was provided.", checks });
+    const resolvedRoot = options.root ? resolveRoot(options.root, cwd) : "";
+    return fail({ input, root: resolvedRoot, absolutePath: resolveInput(input, resolvedRoot, cwd), symlinkPolicy, reason: "INPUT_MISSING", message: "No input path was provided.", checks });
   }
   if (!options.root) {
-    return fail({ input, root, absolutePath, symlinkPolicy, reason: "ROOT_MISSING", message: "A root directory is required.", checks });
+    return fail({ input, root: "", absolutePath: resolveInput(input, "", cwd), symlinkPolicy, reason: "ROOT_MISSING", message: "A root directory is required.", checks });
   }
+
+  const configuredRoot = resolveRoot(options.root, cwd);
+  const root = symlinkPolicy === "follow" ? canonicalizePath(configuredRoot) : configuredRoot;
+  const absolutePath = resolveInput(input, configuredRoot, cwd);
+
   if (policyError) {
     checks.push({ code: "CONFIG_ERROR", ok: false, message: policyError });
     return fail({ input, root, absolutePath, symlinkPolicy, reason: "CONFIG_ERROR", message: policyError, checks });
@@ -49,7 +52,7 @@ export function checkPath(input: string, options: PathsafeOptions): PathsafeDeci
     }
   }
 
-  const realPath = symlinkPolicy === "follow" ? safeRealpath(absolutePath) : undefined;
+  const realPath = symlinkPolicy === "follow" ? canonicalizePath(absolutePath) : undefined;
   const containmentTarget = realPath ?? absolutePath;
   const inside = isWithinRoot(root, containmentTarget);
   checks.push({ code: inside ? "ROOT_CONTAINMENT_PASSED" : "OUTSIDE_ROOT", ok: inside, message: inside ? "Path is inside the configured root." : "Path resolves outside the configured root." });
