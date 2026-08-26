@@ -188,8 +188,8 @@ if (!decision.ok) {
 
 ## Symlink policies
 
-- `follow` (default): canonicalize the configured root and target when possible, then enforce containment and evaluate relative globs on those resolved paths.
-- `refuse`: deny if any existing path segment is a symlink.
+- `follow` (default): canonicalize the configured root and the target, then enforce containment and evaluate relative globs on those canonical paths. When the target does not exist yet (a pre-write check), symlinked parents are still resolved by canonicalizing the deepest existing ancestor, so containment never silently falls back to a lexical path.
+- `refuse`: deny if any path segment is a symlink, including segments that precede a non-existent target.
 - `ignore`: evaluate the lexical path without resolving symlinks.
 
 Use `refuse` for conservative file-write tools. Use `follow` when reading existing files and you want target containment. Use `ignore` only when a caller has already handled symlink risk.
