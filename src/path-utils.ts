@@ -24,6 +24,27 @@ export function isWithinRoot(root: string, target: string): boolean {
   return rel === "" || (!!rel && !rel.startsWith("..") && !path.isAbsolute(rel));
 }
 
+export function canonicalizePath(target: string): string {
+  // Canonicalize the deepest existing ancestor and re-append any missing tail
+  // components, so containment can be evaluated on canonical paths even when
+  // the final target does not exist yet (for example a pre-write check).
+  const missing: string[] = [];
+  let current = target;
+  for (;;) {
+    try {
+      const real = fs.realpathSync.native(current);
+      return missing.length === 0 ? real : path.join(real, ...missing.reverse());
+    } catch {
+      const parent = path.dirname(current);
+      if (parent === current) {
+        return path.join(current, ...missing.reverse());
+      }
+      missing.push(path.basename(current));
+      current = parent;
+    }
+  }
+}
+
 export function safeRealpath(target: string): string | undefined {
   try {
     return fs.realpathSync.native(target);
