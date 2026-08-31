@@ -72,6 +72,12 @@ Batch JSONL:
 {"path":"../outside.txt"}
 ```
 
+Each nonblank line must be a JSON object with a required string `path`.
+Optional `root` must be a string, `allow` and `deny` must be arrays of strings,
+and `symlinkPolicy` must be `follow`, `refuse`, or `ignore`. Record-specific
+values override the corresponding command or configuration defaults. Invalid
+records report their input line and exit without checking that record.
+
 ```sh
 pathsafe batch --root . --input batch.jsonl --json
 ```
