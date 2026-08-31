@@ -24,7 +24,7 @@ test("checks JSONL batch input", async () => {
 
 test("accepts typed per-record overrides", async () => {
   const stream = Readable.from([JSON.stringify({
-    path: "allowed/file.txt",
+    path: path.join(root, "allowed/file.txt"),
     root,
     allow: ["allowed/**"],
     deny: ["blocked/**"],
@@ -59,6 +59,6 @@ test("batch CLI rejects an invalid item policy before checking an outside-target
   const input = JSON.stringify({ path: outsideLink, symlinkPolicy: "typo" }) + "\n";
   const result = spawnSync(process.execPath, [cli, "batch", "--root", root, "--allow", "allowed/**"], { input, encoding: "utf8" });
   assert.equal(result.status, 2);
-  assert.match(result.stderr, /Batch symlinkPolicy must be follow, refuse, or ignore/);
+  assert.match(result.stderr, /Batch input line 1: symlinkPolicy must be follow, refuse, or ignore/);
   assert.doesNotMatch(result.stdout, /ALLOW_MATCH/);
 });
