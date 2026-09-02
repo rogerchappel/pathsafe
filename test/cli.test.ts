@@ -46,6 +46,43 @@ test("missing deny value cannot consume --json and accidentally allow a path", (
   assert.doesNotMatch(result.stdout, /^ALLOW/m);
 });
 
+test("unknown commands are rejected before help, config, or required option handling", () => {
+  for (const suffix of [[], ["--help"], ["--config", "missing.json"], ["--root", root]]) {
+    const result = spawnSync(process.execPath, [cli, "frobnicate", ...suffix], { encoding: "utf8" });
+    assert.equal(result.status, 2);
+    assert.match(result.stderr, /Unknown command: frobnicate/);
+    assert.equal(result.stdout, "");
+  }
+});
+
+test("help succeeds for supported commands without loading config or requiring options", () => {
+  for (const command of ["check", "batch"]) {
+    const result = spawnSync(process.execPath, [cli, command, "--help", "--config", "missing.json"], { encoding: "utf8" });
+    assert.equal(result.status, 0, command);
+    assert.match(result.stdout, /^pathsafe - explainable local path boundary checks/);
+    assert.equal(result.stderr, "");
+  }
+});
+
+test("scalar options reject duplicates while allow and deny remain repeatable", () => {
+  const scalarCases = [
+    ["check", path.join(root, "allowed/file.txt"), "--root", root, "--root", root],
+    ["check", path.join(root, "allowed/file.txt"), "--config", "one.json", "--config", "two.json"],
+    ["batch", "--root", root, "--input", "one.jsonl", "--input", "two.jsonl"],
+    ["check", path.join(root, "allowed/file.txt"), "--symlink-policy", "follow", "--symlink-policy", "refuse"]
+  ];
+  for (const args of scalarCases) {
+    const option = args.at(-2)!;
+    const result = spawnSync(process.execPath, [cli, ...args], { encoding: "utf8" });
+    assert.equal(result.status, 2, option);
+    assert.match(result.stderr, new RegExp(`${option} may only be specified once\\.`), option);
+  }
+
+  const repeatable = spawnSync(process.execPath, [cli, "check", path.join(root, "allowed/file.txt"), "--root", root, "--allow", "**", "--allow", "allowed/**", "--deny", "blocked/**", "--deny", "**/*.secret", "--json"], { encoding: "utf8" });
+  assert.equal(repeatable.status, 0);
+  assert.equal(JSON.parse(repeatable.stdout).ok, true);
+});
+
 test("check requires exactly one path and rejects batch-only input", () => {
   const absent = spawnSync(process.execPath, [cli, "check", "--root", root], { encoding: "utf8" });
   assert.equal(absent.status, 2);
