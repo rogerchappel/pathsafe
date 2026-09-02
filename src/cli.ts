@@ -30,6 +30,8 @@ Options:
   --symlink-policy <policy>   follow (default), refuse, or ignore
   --json                      Print JSON decision(s)
   -h, --help                  Show help
+
+Scalar options (--root, --config, --input, and --symlink-policy) may be supplied only once.
 `;
 }
 
@@ -41,17 +43,21 @@ function parse(argv: string[]): ParsedArgs {
     if (next === undefined || next.startsWith("-")) throw new Error(`${option} requires a value.`);
     return next;
   };
+  const scalar = (option: string, current: string | undefined, next: string | undefined): string => {
+    if (current !== undefined) throw new Error(`${option} may only be specified once.`);
+    return value(option, next);
+  };
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i]!;
     const next = argv[i + 1];
     switch (arg) {
-      case "--root": args.root = value(arg, next); i += 1; break;
+      case "--root": args.root = scalar(arg, args.root, next); i += 1; break;
       case "--allow": args.allow.push(value(arg, next)); i += 1; break;
       case "--deny": args.deny.push(value(arg, next)); i += 1; break;
-      case "--config": args.config = value(arg, next); i += 1; break;
-      case "--input": args.input = value(arg, next); i += 1; break;
-      case "--symlink-policy": args.symlinkPolicy = value(arg, next); i += 1; break;
+      case "--config": args.config = scalar(arg, args.config, next); i += 1; break;
+      case "--input": args.input = scalar(arg, args.input, next); i += 1; break;
+      case "--symlink-policy": args.symlinkPolicy = scalar(arg, args.symlinkPolicy, next); i += 1; break;
       case "--json": args.json = true; break;
       case "-h":
       case "--help": args.help = true; break;
@@ -85,6 +91,10 @@ function optionsFromArgs(args: ParsedArgs): PathsafeOptions {
 
 export async function main(argv = process.argv.slice(2)): Promise<number> {
   try {
+    const command = argv[0];
+    if (command !== undefined && command !== "check" && command !== "batch") {
+      throw new Error(`Unknown command: ${command}`);
+    }
     const args = parse(argv);
     if (args.help || !args.command) {
       console.log(usage());
@@ -104,8 +114,7 @@ export async function main(argv = process.argv.slice(2)): Promise<number> {
       for (const decision of decisions) console.log(args.json ? JSON.stringify(decision) : human(decision));
       return decisions.every((decision) => decision.ok) ? 0 : 1;
     }
-
-    throw new Error(`Unknown command: ${args.command}`);
+    return 2;
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
     return 2;
