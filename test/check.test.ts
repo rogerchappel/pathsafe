@@ -36,6 +36,33 @@ test("follow policy canonicalizes a symlinked configured root", (t) => {
   assert.equal(decision.relativePath, "sub/file.txt");
 });
 
+test("follow policy evaluates canonical-target inputs relative to a symlinked root", (t) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "pathsafe-canonical-root-"));
+  t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+  const realRoot = path.join(directory, "real-root");
+  const linkedRoot = path.join(directory, "root-link");
+  fs.mkdirSync(path.join(realRoot, "allowed"), { recursive: true });
+  fs.mkdirSync(path.join(realRoot, "blocked"), { recursive: true });
+  fs.writeFileSync(path.join(realRoot, "allowed/file.txt"), "fixture\n");
+  fs.writeFileSync(path.join(realRoot, "blocked/file.txt"), "fixture\n");
+  fs.symlinkSync(realRoot, linkedRoot, "dir");
+
+  const allowed = checkPath(path.join(realRoot, "allowed/file.txt"), {
+    root: linkedRoot, allow: ["allowed/**"], deny: ["blocked/**"], symlinkPolicy: "follow"
+  });
+  assert.equal(allowed.ok, true);
+  assert.equal(allowed.root, realRoot);
+  assert.equal(allowed.absolutePath, path.join(realRoot, "allowed/file.txt"));
+  assert.equal(allowed.relativePath, "allowed/file.txt");
+
+  const denied = checkPath(path.join(realRoot, "blocked/file.txt"), {
+    root: linkedRoot, allow: ["**"], deny: ["blocked/**"], symlinkPolicy: "follow"
+  });
+  assert.equal(denied.ok, false);
+  assert.equal(denied.reason, "DENY_MATCH");
+  assert.equal(denied.relativePath, "blocked/file.txt");
+});
+
 test("denies traversal outside root", () => {
   const decision = checkPath(path.join(root, "../outside/outside.txt"), { root, allow: ["**"] });
   assert.equal(decision.ok, false);
