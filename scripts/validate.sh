@@ -6,6 +6,7 @@ npm run check
 npm run build
 npm run smoke
 npm run package:smoke
+npm run release:contract
 
 node dist/src/cli.js check test/fixtures/root/allowed/file.txt \
   --root test/fixtures/root \
