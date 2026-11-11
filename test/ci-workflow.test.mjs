@@ -21,6 +21,19 @@ test("CI installs dependencies and runs every required validation command", asyn
   }
 });
 
+test("CI runs each release:check validation stage", async () => {
+  const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
+  const workflow = await readFile(workflowPath, "utf8");
+  const releaseCheck = packageJson.scripts["release:check"];
+
+  assert.ok(releaseCheck, "package.json must define release:check");
+  const releaseCommands = releaseCheck.split(" && ");
+  for (const command of releaseCommands) {
+    assert.ok(workflow.split("\n").some((line) => line.trim() === `- run: ${command}`),
+      `CI workflow must run release:check stage ${command}`);
+  }
+});
+
 test("CI configures setup-node with the Node version matrix and npm cache", async () => {
   const workflow = await readFile(workflowPath, "utf8");
 
